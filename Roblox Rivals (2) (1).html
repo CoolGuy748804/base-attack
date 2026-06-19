@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Base Rivals 2D - Central Hub</title>
+    <style>
+        :root {
+            --bg-dark: #0a0e17;
+            --panel-bg: rgba(18, 26, 41, 0.65);
+            --neon-blue: #00f0ff;
+            --neon-pink: #ff0055;
+            --neon-amber: #ffaa00;
+            --neon-purple: #9433ff;
+            --text-main: #f0f4f8;
+            --border-glow: rgba(0, 240, 255, 0.15);
+            --roblox-dark: #191b1d;
+            --roblox-panel: #252729;
+            --roblox-green: #00b06f;
+        }
+
+        body { 
+            background: radial-gradient(circle at center, #141b2b 0%, var(--bg-dark) 100%); 
+            color: var(--text-main); 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            overflow: hidden;
+            user-select: none; 
+            -webkit-user-select: none; 
+        }
+
+        .screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; box-sizing: border-box; padding: 20px; overflow-y: auto; }
+        .active { display: flex; }
+        
+        h1 { 
+            font-size: 34px; 
+            font-weight: 800;
+            color: #fff; 
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+            text-align: center; 
+            margin: 0 0 8px 0; 
+            letter-spacing: 3px;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: var(--neon-blue);
+            margin: 15px 0 10px 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .auth-container {
+            background-color: var(--roblox-panel);
+            border-radius: 8px;
+            padding: 30px;
+            width: 100%;
+            max-width: 360px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid #393b3d;
+            text-align: center;
+        }
+        .auth-title {
+            color: #fff;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .auth-input-group {
+            margin-bottom: 14px;
+            text-align: left;
+        }
+        .auth-input-group label {
+            display: block;
+            font-size: 12px;
+            color: #bdbebf;
+            margin-bottom: 5px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .auth-input {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 14px;
+            border: 1px solid #393b3d;
+            background-color: var(--roblox-dark);
+            color: #fff;
+            border-radius: 4px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        .auth-input:focus {
+            border-color: #ffffff;
+        }
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #fff;
+            color: #191b1d;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+        .auth-btn:hover {
+            background-color: #e3e4e5;
+        }
+        .auth-switch {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #bdbebf;
+        }
+        .auth-switch span {
+            color: var(--neon-blue);
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+        .auth-error {
+            color: var(--neon-pink);
+            font-size: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            min-height: 18px;
+            font-weight: 600;
+        }
+
+        .menu-wallet-display {
+            font-size: 14px;
+            color: var(--text-main);
+            font-weight: 500;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 10px 20px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            width: 250px;
+            box-sizing: border-box;
+        }
+
+        .leaderboard-panel {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        .leaderboard-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--neon-blue);
+            text-align: center;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .leaderboard-list {
+            max-height: 90px;
+            overflow-y: auto;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 4px 6px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .leaderboard-item:last-child { border-bottom: none; }
+        .leaderboard-rank { font-weight: bold; color: var(--neon-pink); margin-right: 5px; }
+        .leaderboard-name { flex-grow: 1; color: #fff; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .leaderboard-val { font-weight: 600; color: var(--neon-amber); }
+
+        .btn { 
+            width: 250px; 
+            padding: 12px; 
+            margin: 4px 0; 
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #fff; 
+            font-weight: 600; 
+            text-align: center; 
+            border-radius: 14px; 
+            font-size: 13px; 
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+        .btn:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.2); }
+        
+        .hud { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            width: 100%; 
+            max-width: 400px; 
+            font-size: 13px; 
+            margin-bottom: 12px; 
+            box-sizing: border-box;
+        }
+        .hud-chip {
+            background: var(--panel-bg);
+            padding: 8px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border-glow);
+            font-weight: 600;
+        }
+        
+        .timer-banner {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(90deg, rgba(255,0,85,0) 0%, rgba(255,0,85,0.15) 50%, rgba(255,0,85,0) 100%);
+            border-top: 1px solid rgba(255, 0, 85, 0.2);
+            border-bottom: 1px solid rgba(255, 0, 85, 0.2);
+            padding: 6px 0;
+            margin-bottom: 12px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .arena { 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center; 
+            width: 100%; 
+            max-width: 400px; 
+            background: var(--panel-bg);
+            padding: 16px; 
+            border-radius: 18px; 
+            border: 1px solid var(--border-glow);
+            margin-bottom: 12px; 
+            box-sizing: border-box; 
+        }
+        .fighter { text-align: center; width: 44%; }
+        .fighter-name { font-size: 13px; font-weight: 600; color: #fff; }
+        .weapon-tag { font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; text-transform: uppercase; }
+        .hp-bar { background: rgba(0,0,0,0.3); height: 6px; width: 100%; border-radius: 3px; margin-top: 8px; overflow: hidden; position: relative;}
+        .hp-fill { background: linear-gradient(90deg, var(--neon-pink) 0%, #ff5500 100%); height: 100%; width: 100%; }
+        .hp-text { font-size: 10px; margin-top: 5px; opacity: 0.8; font-weight: bold; }
+        
+        .perks-tray { display: flex; gap: 8px; width: 100%; max-width: 400px; margin-bottom: 12px; box-sizing: border-box; }
+        .perk-btn { flex: 1; padding: 8px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; color: #fff; font-size: 11px; font-weight: 600; text-align: center; cursor: pointer; }
+
+        .log-container { 
+            width: 100%; 
+            max-width: 400px; 
+            height: 48px; 
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px; 
+            box-sizing: border-box; 
+            margin-bottom: 14px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .log-text { color: var(--neon-blue); font-size: 12px; font-weight: 500; text-align: center; }
+        
+        .dice-wrapper { width: 50px; height: 50px; margin-bottom: 14px; }
+        .cyber-die {
+            width: 100%; height: 100%; background: rgba(10, 14, 23, 0.8); border: 2px solid var(--neon-blue); box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: #fff; text-shadow: 0 0 10px var(--neon-blue);
+        }
+        .dice-spinning { animation: glitchSpin 0.4s ease-out; border-color: var(--neon-pink); color: var(--neon-pink); }
+        @keyframes glitchSpin {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .controls-row { display: flex; gap: 10px; width: 100%; max-width: 400px; box-sizing: border-box; }
+        .game-action { flex: 1; padding: 16px; font-size: 13px; font-weight: 700; border-radius: 14px; border: none; color: #000; cursor: pointer; }
+        #detectBtn { display: none; width: 100%; max-width: 400px; padding: 16px; background: var(--neon-pink); color: white; font-size: 14px; font-weight: 700; border: none; border-radius: 14px; margin-bottom: 14px; cursor: pointer; }
+
+        .ttt-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+            margin: 20px 0;
+        }
+        .ttt-cell {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-glow);
+            aspect-ratio: 1;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .ttt-cell:hover { background: rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body>
+
+    <div id="authScreen" class="screen active">
+        <h1>BASE RIVALS 2D</h1>
+        
+        <div class="auth-container" id="loginFormContainer">
+            <div class="auth-title">Login to Base Rivals</div>
+            <div class="auth-error" id="loginError"></div>
+            
+            <div class="auth-input-group">
+                <label>Username</label>
+                <input type="text" class="auth-input" id="loginUsername" placeholder="Callsign/Username">
+            </div>
+            <div class="auth-input-group" id="passPasswordGroup">
+                <label>Password</label>
+                <input type="password" class="auth-input" id="loginPassword" placeholder="Enter Password">
+            </div>
+            
+            <button class="auth-btn" style="background-color: var(--roblox-green); color: white;" onclick="handleLogin()">Log In</button>
+            <button class="auth-btn" id="passkeyVerifyBtn" style="background-color: #3a3d40; color: var(--neon-blue); border: 1px solid var(--neon-blue); margin-top:8px; display:none;" onclick="handlePasskeyLogin()">🧬 Log In with Passkey (Biometrics)</button>
+            
+            <div class="auth-switch">
+                Don't have an account? <span onclick="toggleAuthForms(false)">Sign Up</span>
+            </div>
+        </div>
+
+        <div class="auth-container" id="signupFormContainer" style="display: none;">
+            <div class="auth-title">Create Account</div>
+            <div class="auth-error" id="signupError"></div>
+            
+            <div class="auth-input-group">
+                <label>Username</label>
+                <input type="text" class="auth-input" id="signupUsername" placeholder="Create Callsign" maxlength="12">
+            </div>
+            <div class="auth-input-group">
+                <label>Initial Password</label>
+                <input type="password" class="auth-input" id="signupPassword" placeholder="Create Password">
+            </div>
+            
+            <button class="auth-btn" style="background-color: var(--roblox-green); color: white;" onclick="handleSignUp()">Sign Up</button>
+            
+            <div class="auth-switch">
+                Already have an account? <span onclick="toggleAuthForms(true)">Log In</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="menuScreen" class="screen">
+        <h1 id="welcomeText">WELCOME</h1>
+        
+        <div class="leaderboard-panel">
+            <div class="leaderboard-title">🏆 Global Net Worth</div>
+            <ul class="leaderboard-list" id="leaderboardElement"></ul>
+        </div>
+
+        <div id="menuWallet" class="menu-wallet-display">
+            TOTAL BALANCE: <span style="color: var(--neon-amber); font-weight: bold;">$0</span><br>
+            <span style="font-size: 12px; color: #62758a;">Minigame Daily Cap: <span id="menuMinigameProgress" style="color: var(--neon-blue);">$0 / $300</span></span>
+        </div>
+        
+        <div class="btn" style="background: linear-gradient(90deg, #0055ff, var(--neon-blue)); border:none; font-weight:700;" onclick="showScreen('modesScreen')">LAUNCH MATCH</div>
+        <div class="btn" style="border-color: var(--neon-purple); color: #b77eff;" onclick="startMinigame()">PLAY MINIGAME (TIC-TAC-TOE)</div>
+        <div class="btn" onclick="showScreen('upgradesScreen')">LOADOUT INVENTORY</div>
+        <div class="btn" style="border-color: var(--neon-amber); color: var(--neon-amber);" onclick="showScreen('settingsScreen')">⚙️ TERMINAL SETTINGS</div>
+        <div class="btn" style="border-color: rgba(255, 0, 85, 0.3); color: var(--neon-pink);" onclick="handleSignOut()">DISCONNECT</div>
+    </div>
+
+    <div id="settingsScreen" class="screen">
+        <h1>TERMINAL SETTINGS</h1>
+        <p style="color: #62758a; font-size: 14px; margin: 0 0 20px 0; text-align: center;">Configure your physical hardware touch core.</p>
+        
+        <div class="auth-container">
+            <div class="auth-title" style="font-size: 16px; color: var(--neon-blue);">Roblox-Style Passkeys</div>
+            <div id="settingsNotice" style="color: #62758a; font-size: 12px; margin-bottom: 16px;">No biometrics configured.</div>
+            
+            <button class="auth-btn" style="background-color: var(--neon-purple); color: white;" onclick="registerDevicePasskey()">👆 Link Fingerprint / Face ID</button>
+        </div>
+
+        <div class="btn" style="margin-top: 20px; border-color: #4a5568;" onclick="returnToMenu()">RETURN TO HUB</div>
+    </div>
+
+    <div id="minigameScreen" class="screen">
+        <h1>DATA HACK</h1>
+        <p style="color: #62758a; font-size: 13px; margin: 0; text-align: center;">Beat the AI firewall to claim minigame rewards.</p>
+        <div id="minigameRewardStatus" style="font-size: 14px; color: var(--neon-amber); font-weight: 600; margin-top: 10px;">Cap Remaining: $300</div>
+        
+        <div class="ttt-grid" id="tttGrid">
+            <div class="ttt-cell" onclick="makeMinigameMove(0)"></div>
+            <div class="ttt-cell" onclick="makeMinigameMove(1)"></div>
+            <div class="ttt-cell" onclick="makeMinigameMove(2)"></div>
+            <div class="ttt-cell" onclick="makeMinigameMove(3)"></div>
+            <div class="ttt-cell" onclick="makeMinigameMove(4)"></div>
+            <div class="ttt-cell" onclick="makeMinigameMove(5)"></div>
+            <div class="ttt-cell" onclick="makeMinigameMove(6)"></div>
+            <div class="ttt-cell" onclick="makeMinigameMove(7)"></div>
+            <div class="ttt-cell" onclick="makeMinigameMove(8)"></div>
+        </div>
+
+        <div id="minigameStatusMsg" style="color: var(--neon-blue); font-size: 14px; font-weight: bold; min-height: 20px; margin-bottom: 15px;">Your Turn (X)</div>
+        <div class="btn" id="tttResetBtn" style="display: none; border-color: var(--neon-blue);" onclick="resetMinigameBoard()">PLAY AGAIN</div>
+        <div class="btn" style="border-color: #4a5568;" onclick="returnToMenu()">RETURN TO TERMINAL</div>
+    </div>
+
+    <div id="upgradesScreen" class="screen">
+        <h1>THE ARSENAL</h1>
+        <div style="margin: 5px 0 15px 0; font-size: 14px; color: #8a99ad;">Use your balance to buy inventory assets</div>
+        
+        <h2>Combat Loadouts</h2>
+        <button class="btn" style="border-color: var(--neon-purple); color: #b77eff;" onclick="buyPerk('emp')">BUY EMP MODULE ($50) <span id="shopEmpCount">[0]</span></button>
+        <button class="btn" style="border-color: var(--neon-pink); color: #ff6699;" onclick="buyPerk('repair')">BUY NANO-REPAIR ($50) <span id="shopRepairCount">[0]</span></button>
+        <button class="btn" style="border-color: var(--neon-amber); color: var(--neon-amber);" onclick="buyPerk('shield')">BUY SHIELD CORE ($50) <span id="shopShieldCount">[0]</span></button>
+        
+        <div class="btn" style="margin-top: 15px; border-color: #4a5568;" onclick="returnToMenu()">RETURN</div>
+    </div>
+
+    <div id="modesScreen" class="screen">
+        <h1>PROTOCOLS</h1>
+        <p style="color: #62758a; font-size: 14px; margin: 0 0 25px 0;">Select combat simulation environment</p>
+        <div class="btn" onclick="selectWeaponPhase('bot')">VS AI BOT (UNLIMITED EARNINGS)</div>
+        <div class="btn" onclick="selectWeaponPhase('pvp')">PLAYER VS PLAYER</div>
+        <div class="btn" style="margin-top: 15px;" onclick="returnToMenu()">RETURN</div>
+    </div>
+
+    <div id="weaponSelectScreen" class="screen">
+        <h1>CHOOSE WEAPON</h1>
+        <p style="color: #62758a; font-size: 14px; margin: 0 0 20px 0;">Equip matrix for upcoming combat sequence</p>
+        <button class="btn" style="border-color: var(--neon-blue); color: var(--neon-blue);" onclick="confirmWeaponSelect('Laser Blaster')">🎯 LASER BLASTER (+15 Flat Dmg)</button>
+        <button class="btn" style="border-color: var(--neon-pink); color: var(--neon-pink);" onclick="confirmWeaponSelect('Plasma Cannon')">💥 PLASMA CANNON (+30 Crit Dmg on 6)</button>
+        <button class="btn" style="border-color: var(--neon-amber); color: var(--neon-amber);" onclick="confirmWeaponSelect('EMP Rifle')">⚡ EMP RIFLE (Chance to Daze Target)</button>
+        <div class="btn" style="margin-top: 15px; border-color: #4a5568;" onclick="showScreen('modesScreen')">BACK</div>
+    </div>
+
+    <div id="gameScreen" class="screen">
+        <div class="hud">
+            <div class="hud-chip" id="cashLabel" style="color: var(--neon-amber);">Bank: $0</div>
+            <div class="hud-chip" id="turnLabel" style="color: var(--neon-blue);">P1 Turn</div>
+            <div class="hud-chip" id="turnTimerDisplay" style="color: #fff;">⏱️ 5s</div>
+        </div>
+
+        <div class="timer-banner" id="matchTimerDisplay">MATCH CLOCK ⏱️ 1:00</div>
+
+        <div class="arena">
+            <div class="fighter">
+                <div id="p1Name" class="fighter-name">Your Player</div>
+                <div id="p1Weapon" class="weapon-tag" style="background:rgba(0, 240, 255, 0.15); color:var(--neon-blue);">None</div>
+                <div id="p1RosterCount" class="fighter-meta" style="margin-top:6px;">Units: 30</div>
+                <div class="hp-bar">
+                    <div class="hp-fill" id="p1HpFill"></div>
+                    <div id="p1ShieldIndicator" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,240,255,0.4);"></div>
+                </div>
+                <div id="p1HpText" class="hp-text" style="color: var(--neon-pink);">150/150 HP</div>
+            </div>
+            <div style="font-weight: 800; color: rgba(255,255,255,0.15); font-size: 14px;">VS</div>
+            <div class="fighter">
+                <div id="p2Name" class="fighter-name">Enemy Bot</div>
+                <div id="p2Weapon" class="weapon-tag" style="background:rgba(255, 0, 85, 0.15); color:var(--neon-pink);">None</div>
+                <div id="p2RosterCount" class="fighter-meta" style="margin-top:6px;">Units: 30</div>
+                <div class="hp-bar">
+                    <div class="hp-fill" id="p2HpFill"></div>
+                    <div id="p2ShieldIndicator" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,240,255,0.4);"></div>
+                </div>
+                <div id="p2HpText" class="hp-text" style="color: var(--neon-pink);">150/150 HP</div>
+            </div>
+        </div>
+
+        <div class="perks-tray">
+            <button class="perk-btn" id="useEmpBtn" onclick="usePerk('emp')">EMP (0)</button>
+            <button class="perk-btn" id="useRepairBtn" onclick="usePerk('repair')">REPAIR (0)</button>
+            <button class="perk-btn" id="useShieldBtn" onclick="usePerk('shield')">SHIELD (0)</button>
+        </div>
+
+        <button id="detectBtn" onclick="handleDetectSuccess()">⚠️ DETECT SNEAK ATTACK! ⚠️</button>
+
+        <div class="dice-wrapper">
+            <div class="cyber-die" id="diceDisplay">1</div>
+        </div>
+        
+        <div class="log-container">
+            <div class="log-text" id="logBox">Select strategy...</div>
+        </div>
+
+        <div class="controls-row" id="controlsMenu">
+            <button class="game-action" style="background: var(--neon-blue);" onclick="showActionButtons()">DEPLOY ACTION</button>
+            <button id="giveUpBtn" class="game-action" style="background: rgba(255,0,85,0.1); color: var(--neon-pink); border: 1px solid rgba(255,0,85,0.2); max-width: 85px; font-size: 11px; padding:0; display:flex; align-items:center; justify-content:center; opacity:0.3; cursor:not-allowed;" onclick="handleGiveUp()">FORFEIT</button>
+        </div>
+        
+        <div class="controls-row" id="actionButtons" style="display: none;">
+            <button class="game-action" style="background: var(--neon-purple); color: #fff;" onclick="showWarMenu()">WAR PROTOCOL</button>
+            <button class="game-action" style="background: var(--neon-amber);" onclick="triggerAction('sneak')">SNEAK STRIKE</button>
+        </div>
+
+        <div class="controls-row" id="warMenu" style="display: none;">
+            <button class="game-action" style="background: var(--neon-pink); color: white;" onclick="triggerAction('war_attack')">ENGAGE ATTACK</button>
+            <button class="game-action" style="background: rgba(255,255,255,0.06); color: white; border: 1px solid rgba(255,255,255,0.1);" onclick="triggerAction('war_retreat')">RETREAT</button>
+        </div>
+
+        <div class="controls-row" id="endgameMenu" style="display: none;">
+            <button class="game-action" style="background: var(--neon-blue);" onclick="handleRestart()">RELAUNCH</button>
+            <button class="game-action" style="background: rgba(255,255,255,0.06); color: white; border: 1px solid rgba(255,255,255,0.1);" onclick="returnToMenu()">TERMINAL MENU</button>
+        </div>
+    </div>
+
+    <script>
+        let accountsDB = {};
+        let currentUser = "";
+        
+        let playerWallet = 0;
+        let minigameEarningsToday = 0;
+        let playerInventory = { emp: 0, repair: 0, shield: 0 };
+
+        const minigameDailyCap = 300; 
+        const minigameRewardAmt = 100;
+        
+        let matchMode = 'bot';
+        let p1Roster = 30, p2Roster = 30;
+        let p1Hp = 150, p2Hp = 150;
+        let p1Sixes = 0, p2Sixes = 0;
+        let tttBoard = ["", "", "", "", "", "", "", "", ""];
+        let isMinigameActive = true;
+        let currentTurn = 1; 
+        let isSystemReady = true;
+        let isWarPhaseLocked = false; 
+        let logTimeout, sneakAttackTimeout;
+        let playerTurnSeconds = 5;
+        let playerTurnInterval = null;
+        let matchSecondsRemaining = 60;
+        let matchClockInterval = null;
+        let activeShields = { p1: false, p2: false };
+        let botEmpSkipped = false;
+        let botPityReduction = 0; 
+        let playerPityIncentive = 0; 
+        let p1EquippedWeapon = "Laser Blaster";
+        let p2EquippedWeapon = "Laser Blaster";
+        const totalWeaponsPool = ["Laser Blaster", "Plasma Cannon", "EMP Rifle"];
+
+        // UI Listener to monitor input updates and switch buttons dynamically
+        document.getElementById("loginUsername").addEventListener("input", function(e) {
+            let userKey = e.target.value.trim().toLowerCase();
+            let passBtn = document.getElementById("passkeyVerifyBtn");
+            let passGroup = document.getElementById("passPasswordGroup");
+            
+            if (accountsDB[userKey] && accountsDB[userKey].hasPasskey) {
+                passBtn.style.display = "block";
+                passGroup.style.display = "none";
+            } else {
+                passBtn.style.display = "none";
+                passGroup.style.display = "block";
+            }
+        });
+
+        window.onload = function() {
+            let savedDB = localStorage.getItem("br_accounts_db");
+            if (savedDB) {
+                accountsDB = JSON.parse(savedDB);
+            }
+
+            let activeSessionUser = localStorage.getItem("br_active_session");
+            if (activeSessionUser && accountsDB[activeSessionUser]) {
+                loadAccountSession(activeSessionUser);
+                returnToMenu();
+            }
+        }
+
+        function toggleAuthForms(showLogin) {
+            document.getElementById("loginError").innerText = "";
+            document.getElementById("signupError").innerText = "";
+            document.getElementById("loginUsername").value = "";
+            document.getElementById("passkeyVerifyBtn").style.display = "none";
+            document.getElementById("passPasswordGroup").style.display = "block";
+
+            if (showLogin) {
+                document.getElementById("loginFormContainer").style.display = "block";
+                document.getElementById("signupFormContainer").style.display = "none";
+            } else {
+                document.getElementById("loginFormContainer").style.display = "none";
+                document.getElementById("signupFormContainer").style.display = "block";
+            }
+        }
+
+        function handleSignUp() {
+            let uInput = document.getElementById("signupUsername").value.trim();
+            let uLower = uInput.toLowerCase();
+            let pInput = document.getElementById("signupPassword").value;
+            let errEl = document.getElementById("signupError");
+
+            if (uInput === "" || pInput === "") {
+                errEl.innerText = "Username and password fields required.";
+                return;
+            }
+            if (uInput.length < 3) {
+                errEl.innerText = "Username must be at least 3 characters.";
+                return;
+            }
+            if (accountsDB[uLower]) {
+                errEl.innerText = "This username is already taken.";
+                return;
+            }
+
+            accountsDB[uLower] = {
+                displayName: uInput,
+                password: pInput,
+                hasPasskey: false,
+                wallet: 0,
+                minigameCap: 0,
+                inventory: { emp: 0, repair: 0, shield: 0 }
+            };
+
+            localStorage.setItem("br_accounts_db", JSON.stringify(accountsDB));
+            errEl.innerText = "";
+            
+            document.getElementById("signupUsername").value = "";
+            document.getElementById("signupPassword").value = "";
+
+            loadAccountSession(uLower);
+            returnToMenu();
+        }
+
+        function handleLogin() {
+            let uInput = document.getElementById("loginUsername").value.trim().toLowerCase();
+            let pInput = document.getElementById("loginPassword").value;
+            let errEl = document.getElementById("loginError");
+
+            if (uInput === "" || pInput === "") {
+                errEl.innerText = "Please enter validation credentials.";
+                return;
+            }
+            if (!accountsDB[uInput]) {
+                errEl.innerText = "Incorrect username or configuration profile.";
+                return;
+            }
+
+            let targetAccount = accountsDB[uInput];
+            if (targetAccount.password !== pInput) {
+                errEl.innerText = "Incorrect account login password.";
+                return;
+            }
+
+            errEl.innerText = "";
+            document.getElementById("loginUsername").value = "";
+            document.getElementById("loginPassword").value = "";
+
+            loadAccountSession(uInput);
+            returnToMenu();
+        }
+
+        /* HARDWARE-BACKED BIOMETRIC PASSKEY GENERATION (ROBLOX STYLE) */
+        async function registerDevicePasskey() {
+            if (!window.PublicKeyCredential) {
+                alert("Passkeys/Biometrics are not supported on this browser context.");
+                return;
+            }
+
+            try {
+                // Cryptographic validation arguments mapping native hardware locks
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+                const userId = new Uint8Array(16);
+                window.crypto.getRandomValues(userId);
+
+                const publicKeyCredentialCreationOptions = {
+                    challenge: challenge,
+                    rp: { name: "Base Rivals Hub", id: window.location.hostname || "localhost" },
+                    user: {
+                        id: userId,
+                        name: currentUser,
+                        displayName: accountsDB[currentUser].displayName || currentUser
+                    },
+                    pubKeyCredParams: [{type: "public-key", alg: -7}], // ES256 algorithm support
+                    authenticatorSelection: { authenticatorAttachment: "platform" }, // Forces device native lock screen (Fingerprint/FaceID)
+                    timeout: 60000
+                };
+
+                // Triggers OS lock fingerprint/face pop-up interface
+                const credential = await navigator.credentials.create({
+                    publicKey: publicKeyCredentialCreationOptions
+                });
+
+                if (credential) {
+                    accountsDB[currentUser].hasPasskey = true;
+                    localStorage.setItem("br_accounts_db", JSON.stringify(accountsDB));
+                    
+                    let noticeEl = document.getElementById("settingsNotice");
+                    noticeEl.innerText = "🔒 Biometric Core Online: Fingerprint/Face ID linked.";
+                    noticeEl.style.color = "var(--neon-blue)";
+                    alert("Passkey successfully registered to local hardware structure!");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Passkey integration interrupted or setup declined.");
+            }
+        }
+
+        /* NATIVE DEVICE LOCK PASSKEY AUTHENTICATION */
+        async function handlePasskeyLogin() {
+            let uInput = document.getElementById("loginUsername").value.trim().toLowerCase();
+            let errEl = document.getElementById("loginError");
+
+            if (!accountsDB[uInput] || !accountsDB[uInput].hasPasskey) {
+                errEl.innerText = "No passkey configuration linked onto this callsign profile.";
+                return;
+            }
+
+            try {
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+
+                const publicKeyCredentialRequestOptions = {
+                    challenge: challenge,
+                    rpId: window.location.hostname || "localhost",
+                    allowCredentials: [],
+                    userVerification: "required"
+                };
+
+                // Prompts fingerprint/face reader window
+                const assertion = await navigator.credentials.get({
+                    publicKey: publicKeyCredentialRequestOptions
+                });
+
+                if (assertion) {
+                    errEl.innerText = "";
+                    document.getElementById("loginUsername").value = "";
+                    loadAccountSession(uInput);
+                    returnToMenu();
+                }
+            } catch(err) {
+                console.error(err);
+                errEl.innerText = "Biometric passkey confirmation rejected.";
+            }
+        }
+
+        function loadAccountSession(username) {
+            currentUser = username;
+            localStorage.setItem("br_active_session", currentUser);
+
+            let userProfile = accountsDB[currentUser];
+            playerWallet = userProfile.wallet || 0;
+            minigameEarningsToday = userProfile.minigameCap || 0;
+            playerInventory = userProfile.inventory || { emp: 0, repair: 0, shield: 0 };
+
+            let finalName = userProfile.displayName || currentUser;
+            document.getElementById("welcomeText").innerText = "WELCOME, " + finalName.toUpperCase();
+            
+            let noticeEl = document.getElementById("settingsNotice");
+            if (userProfile.hasPasskey) {
+                noticeEl.innerText = "🔒 Biometric Core Online: Fingerprint/Face ID linked.";
+                noticeEl.style.color = "var(--neon-blue)";
+            } else {
+                noticeEl.innerText = "🔓 No biometrics configured.";
+                noticeEl.style.color = "#62758a";
+            }
+
+            updateShopCounts();
+            renderLeaderboard();
+        }
+
+        function saveGameData() {
+            if (!currentUser || !accountsDB[currentUser]) return;
+
+            accountsDB[currentUser].wallet = playerWallet;
+            accountsDB[currentUser].minigameCap = minigameEarningsToday;
+            accountsDB[currentUser].inventory = playerInventory;
+
+            localStorage.setItem("br_accounts_db", JSON.stringify(accountsDB));
+            renderLeaderboard();
+        }
+
+        function handleSignOut() {
+            stopPlayerTurnTimer(); 
+            if (matchClockInterval) clearInterval(matchClockInterval);
+            clearTimeout(sneakAttackTimeout);
+
+            localStorage.removeItem("br_active_session");
+            currentUser = "";
+            playerWallet = 0;
+            minigameEarningsToday = 0;
+            playerInventory = { emp: 0, repair: 0, shield: 0 };
+
+            toggleAuthForms(true);
+            showScreen("authScreen");
+        }
+
+        function renderLeaderboard() {
+            const listElement = document.getElementById("leaderboardElement");
+            if (!listElement) return;
+            listElement.innerHTML = "";
+
+            let sortedUsers = [];
+            for (let key in accountsDB) {
+                if (accountsDB.hasOwnProperty(key)) {
+                    sortedUsers.push({
+                        username: accountsDB[key].displayName || key,
+                        wallet: accountsDB[key].wallet || 0
+                    });
+                }
+            }
+
+            sortedUsers.sort((a, b) => b.wallet - a.wallet);
+            let displayCount = Math.min(sortedUsers.length, 10);
+            
+            if (displayCount === 0) {
+                listElement.innerHTML = `<li class="leaderboard-item" style="color:#62758a; justify-content:center;">No data records found</li>`;
+                return;
+            }
+
+            for (let i = 0; i < displayCount; i++) {
+                let userObj = sortedUsers[i];
+                let item = document.createElement("li");
+                item.className = "leaderboard-item";
+                item.innerHTML = `
+                    <span class="leaderboard-name"><span class="leaderboard-rank">#${i+1}</span>${userObj.username}</span>
+                    <span class="leaderboard-val">$${userObj.wallet}</span>
+                `;
+                listElement.appendChild(item);
+            }
+        }
+
+        function startMinigame() {
+            resetMinigameBoard();
+            showScreen('minigameScreen');
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            renderLeaderboard();
+        });
+
+        function resetMinigameBoard() {
+            tttBoard = ["", "", "", "", "", "", "", "", ""];
+            isMinigameActive = true;
+            document.getElementById("tttResetBtn").style.display = "none";
+            document.getElementById("minigameStatusMsg").innerText = "Your Turn (X)";
+            document.getElementById("minigameStatusMsg").style.color = "var(--neon-blue)";
+            document.getElementById("minigameRewardStatus").innerText = `Cap Remaining: $${minigameDailyCap - minigameEarningsToday}`;
+
+            const cells = document.querySelectorAll('.ttt-cell');
+            cells.forEach(cell => {
+                cell.innerText = "";
+                cell.style.color = "#fff";
+            });
+        }
+
+        function makeMinigameMove(index) {
+            if (!isMinigameActive || tttBoard[index] !== "") return;
+
+            tttBoard[index] = "X";
+            document.querySelectorAll('.ttt-cell')[index].innerText = "X";
+            document.querySelectorAll('.ttt-cell')[index].style.color = '#00f0ff';
+
+            if (checkMinigameWinner("X")) {
+                handleMinigameWin();
+                return;
+            }
+            if (tttBoard.every(cell => cell !== "")) {
+                handleMinigameDraw();
+                return;
+            }
+
+            isMinigameActive = false;
+            document.getElementById("minigameStatusMsg").innerText = "Firewall processing...";
+            setTimeout(() => {
+                let emptyIndices = tttBoard.map((val, i) => val === "" ? i : null).filter(val => val !== null);
+                if (emptyIndices.length > 0) {
+                    let aiChoice = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+                    tttBoard[aiChoice] = "O";
+                    document.querySelectorAll('.ttt-cell')[aiChoice].innerText = "O";
+                    document.querySelectorAll('.ttt-cell')[aiChoice].style.color = '#ff0055';
+
+                    if (checkMinigameWinner("O")) {
+                        handleMinigameLoss();
+                        return;
+                    }
+                    if (tttBoard.every(cell => cell !== "")) {
+                        handleMinigameDraw();
+                        return;
+                    }
+                }
+                isMinigameActive = true;
+                document.getElementById("minigameStatusMsg").innerText = "Your Turn (X)";
+            }, 600);
+        }
+
+        function checkMinigameWinner(player) {
+            const winPatterns = [
+                [0,1,2], [3,4,5], [6,7,8],
+                [0,3,6], [1,4,7], [2,5,8],
+                [0,4,8], [2,4,6]
+            ];
+            return winPatterns.some(pattern => {
+                return pattern.every(idx => tttBoard[idx] === player);
+            });
+        }
+
+        function handleMinigameWin() {
+            isMinigameActive = false;
+            document.getElementById("tttResetBtn").style.display = "block";
+
+            if (minigameEarningsToday >= minigameDailyCap) {
+                document.getElementById("minigameStatusMsg").innerText = "SUCCESS! Max daily minigame data limits reached ($300).";
+                document.getElementById("minigameStatusMsg").style.color = "var(--neon-amber)";
+            } else {
+                let currentPayout = minigameRewardAmt;
+                if (minigameEarningsToday + currentPayout > minigameDailyCap) {
+                    currentPayout = minigameDailyCap - minigameEarningsToday;
+                }
+                minigameEarningsToday += currentPayout;
+                playerWallet += currentPayout;
+                saveGameData();
+
+                document.getElementById("minigameStatusMsg").innerText = `VICTORY! Firewall Bypassed: +$${currentPayout}`;
+                document.getElementById("minigameStatusMsg").style.color = "#00ff66";
+                document.getElementById("minigameRewardStatus").innerText = `Cap Remaining: $${minigameDailyCap - minigameEarningsToday}`;
+            }
+        }
+
+        function handleMinigameLoss() {
+            isMinigameActive = false;
+            document.getElementById("tttResetBtn").style.display = "block";
+            document.getElementById("minigameStatusMsg").innerText = "HACK FAILED: Firewall locked out configuration.";
+            document.getElementById("minigameStatusMsg").style.color = "var(--neon-pink)";
+        }
+
+        function handleMinigameDraw() {
+            isMinigameActive = false;
+            document.getElementById("tttResetBtn").style.display = "block";
+            document.getElementById("minigameStatusMsg").innerText = "SIGNAL DROPPED: Grid lock connection state.";
+            document.getElementById("minigameStatusMsg").style.color = "#8a99ad";
+        }
+
+        function selectWeaponPhase(mode) {
+            matchMode = mode;
+            showScreen('weaponSelectScreen');
+        }
+
+        function confirmWeaponSelect(weaponName) {
+            p1EquippedWeapon = weaponName;
+            if (matchMode === 'bot') {
+                p2EquippedWeapon = totalWeaponsPool[Math.floor(Math.random() * totalWeaponsPool.length)];
+            } else {
+                p2EquippedWeapon = "Laser Blaster"; 
+            }
+            initMatch();
+        }
+
+        function stopPlayerTurnTimer() {
+            if (playerTurnInterval) { clearInterval(playerTurnInterval); playerTurnInterval = null; }
+            document.getElementById("turnTimerDisplay").innerText = "⏱️ --";
+        }
+
+        function startPlayerTurnTimer() {
+            stopPlayerTurnTimer();
+            if (!isSystemReady || (currentTurn === 2 && matchMode === 'bot')) return;
+            playerTurnSeconds = 5;
+            document.getElementById("turnTimerDisplay").innerText = `⏱️ ${playerTurnSeconds}s`;
+
+            playerTurnInterval = setInterval(() => {
+                playerTurnSeconds--;
+                document.getElementById("turnTimerDisplay").innerText = `⏱️ ${playerTurnSeconds}s`;
+                if (playerTurnSeconds <= 0) { stopPlayerTurnTimer(); handlePlayerTimeout(); }
+            }, 1000);
+        }
+
+        function startMatchGlobalTimer() {
+            if (matchClockInterval) clearInterval(matchClockInterval);
+            matchSecondsRemaining = 60;
+            updateMatchTimerUI();
+            matchClockInterval = setInterval(() => {
+                if (!isSystemReady) return; 
+                matchSecondsRemaining--;
+                updateMatchTimerUI();
+                if (matchSecondsRemaining <= 0) { clearInterval(matchClockInterval); executeMatchTimeLimitConclusion(); }
+            }, 1000);
+        }
+
+        function updateMatchTimerUI() {
+            let mins = Math.floor(matchSecondsRemaining / 60);
+            let secs = matchSecondsRemaining % 60;
+            if (secs < 10) secs = "0" + secs;
+            document.getElementById("matchTimerDisplay").innerText = `MATCH CLOCK ⏱️ ${mins}:${secs}`;
+        }
+
+        function executeMatchTimeLimitConclusion() {
+            stopPlayerTurnTimer(); clearTimeout(sneakAttackTimeout);
+            isSystemReady = false;
+            let logMsg = "⏱️ TIME EXPIRED! ";
+
+            setTimeout(() => {
+                if (p1Roster >= p2Roster) {
+                    playerWallet += 500;
+                    saveGameData();
+                    logMsg += `🏆 P1 TIME LIMIT VICTORY! Flat +$500 added.`;
+                } else {
+                    logMsg += `💀 MATCH LOST! No allocation added.`;
+                }
+                updateDisplayHuds();
+                setTemporaryLog(logMsg, 4000, () => { showEndgameNavigation(); });
+            }, 1000);
+        }
+
+        function handlePlayerTimeout() {
+            if (!isSystemReady) return;
+            stopPlayerTurnTimer();
+            if (matchMode === 'bot') {
+                currentTurn = 2; isSystemReady = false; resetControlButtons();
+                setTemporaryLog("⚠️ TIMEOUT! Bot processing active threat line...", 2500, () => { executeBotAI(); });
+            } else {
+                currentTurn = currentTurn === 1 ? 2 : 1;
+                setTemporaryLog(`⚠️ TIMEOUT! Swapping to P${currentTurn} Turn.`, 2500, () => { resetControlButtons(); startPlayerTurnTimer(); });
+            }
+        }
+
+        function buyPerk(type) {
+            let currentCost = 50; 
+            if (playerWallet >= currentCost) {
+                playerWallet -= currentCost;
+                playerInventory[type]++;
+                saveGameData();
+                updateShopCounts();
+            } else {
+                alert(`Requires $50.`);
+            }
+        }
+
+        function updateShopCounts() {
+            document.getElementById("shopEmpCount").innerText = `[${playerInventory.emp}]`;
+            document.getElementById("shopRepairCount").innerText = `[${playerInventory.repair}]`;
+            document.getElementById("shopShieldCount").innerText = `[${playerInventory.shield}]`;
+            
+            document.getElementById("menuWallet").innerHTML = `
+                TOTAL BALANCE: <span style="color: var(--neon-amber); font-weight: bold;">$${playerWallet}</span><br>
+                <span style="font-size: 12px; color: #62758a;">Minigame Daily Cap: <span id="menuMinigameProgress" style="color: var(--neon-blue);">$${minigameEarningsToday} / $${minigameDailyCap}</span></span>
+            `;
+        }
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if (id === 'upgradesScreen' || id === 'menuScreen') updateShopCounts();
+        }
+
+        function returnToMenu() {
+            stopPlayerTurnTimer(); if (matchClockInterval) clearInterval(matchClockInterval);
+            clearTimeout(sneakAttackTimeout);
+            showScreen('menuScreen');
+        }
+
+        function usePerk(type) {
+            if (!isSystemReady || currentTurn !== 1) return;
+            if (playerInventory[type] <= 0) return;
+            if (type === 'emp') {
+                playerInventory.emp--; botEmpSkipped = true;
+                setTemporaryLog("⚡ EMP LOADED: AI matrix bypassed on the next round.", 3000);
+            } else if (type === 'repair') {
+                playerInventory.repair--; p1Hp += 50; if (p1Hp > 150) p1Hp = 150;
+                setTemporaryLog("🔧 NANITES REPLOYED: Healed structural hull (+50 HP).", 3000);
+            } else if (type === 'shield') {
+                playerInventory.shield--; activeShields.p1 = true;
+                setTemporaryLog("🛡️ SHIELD MODULE ENGAGED: Next incoming impact fully mitigated.", 3000);
+            }
+            saveGameData(); updateDisplayHuds();
+        }
+
+        function initMatch() {
+            p1Roster = 30; p2Roster = 30; p1Hp = 150; p2Hp = 150; p1Sixes = 0; p2Sixes = 0;
+            currentTurn = 1; isSystemReady = true; isWarPhaseLocked = false; botEmpSkipped = false;
+            botPityReduction = 0; playerPityIncentive = 0; activeShields = { p1: false, p2: false };
+            clearTimeout(sneakAttackTimeout);
+
+            let userProfile = accountsDB[currentUser];
+            let finalName = userProfile ? (userProfile.displayName || currentUser) : "Your Player";
+            document.getElementById("p1Name").innerText = finalName.toUpperCase();
+            document.getElementById("p2Name").innerText = matchMode === 'pvp' ? "Player 2" : "Enemy Bot";
+            document.getElementById("p1Weapon").innerText = p1EquippedWeapon;
+            document.getElementById("p2Weapon").innerText = p2EquippedWeapon;
+
+            updateDisplayHuds(); resetControlButtons();
+            document.getElementById("diceDisplay").innerText = "1";
+            showScreen('gameScreen'); startPlayerTurnTimer(); startMatchGlobalTimer();
+        }
+
+        function handleRestart() {
+            if (matchMode === 'bot') {
+                p2EquippedWeapon = totalWeaponsPool[Math.floor(Math.random() * totalWeaponsPool.length)];
+            }
+            initMatch();
+        }
+
+        function updateDisplayHuds() {
+            document.getElementById("p1RosterCount").innerText = "Units: " + p1Roster;
+            document.getElementById("p2RosterCount").innerText = "Units: " + p2Roster;
+            document.getElementById("p1HpText").innerText = `${p1Hp}/150 HP`;
+            document.getElementById("p2HpText").innerText = `${p2Hp}/150 HP`;
+            document.getElementById("p1HpFill").style.width = (p1Hp / 150 * 100) + "%";
+            document.getElementById("p2HpFill").style.width = (p2Hp / 150 * 100) + "%";
+            document.getElementById("turnLabel").innerText = "P" + currentTurn + " Turn";
+            document.getElementById("cashLabel").innerText = "Bank: $" + playerWallet;
+
+            document.getElementById("useEmpBtn").innerText = `EMP (${playerInventory.emp})`;
+            document.getElementById("useRepairBtn").innerText = `REPAIR (${playerInventory.repair})`;
+            document.getElementById("useShieldBtn").innerText = `SHIELD (${playerInventory.shield})`;
+
+            document.getElementById("p1ShieldIndicator").style.display = activeShields.p1 ? "block" : "none";
+            document.getElementById("p2ShieldIndicator").style.display = activeShields.p2 ? "block" : "none";
+
+            let giveUpEl = document.getElementById("giveUpBtn");
+            if (p1Roster <= 10) { giveUpEl.style.opacity = "1"; giveUpEl.style.cursor = "pointer"; } 
+            else { giveUpEl.style.opacity = "0.3"; giveUpEl.style.cursor = "not-allowed"; }
+        }
+
+        function handleGiveUp() {
+            if (p1Roster > 10) return;
+            stopPlayerTurnTimer(); if (matchClockInterval) clearInterval(matchClockInterval);
+            clearTimeout(sneakAttackTimeout);
+            setTemporaryLog("Surrendered!", 3000, () => { showEndgameNavigation(); });
+        }
+
+        function setTemporaryLog(msg, duration = 3000, callback = null) {
+            clearTimeout(logTimeout); const box = document.getElementById("logBox");
+            box.innerText = msg;
+            logTimeout = setTimeout(() => { box.innerText = ""; if(callback) callback(); }, duration);
+        }
+
+        function showActionButtons() {
+            if (!isSystemReady) return;
+            document.getElementById("controlsMenu").style.display = "none";
+            document.getElementById("actionButtons").style.display = "flex";
+        }
+
+        function showWarMenu() {
+            isWarPhaseLocked = true; 
+            document.getElementById("controlsMenu").style.display = "none";
+            document.getElementById("actionButtons").style.display = "none";
+            document.getElementById("warMenu").style.display = "flex";
+        }
+
+        function resetControlButtons() {
+            document.getElementById("endgameMenu").style.display = "none";
+            if (currentTurn === 2 && matchMode === 'bot') {
+                document.getElementById("controlsMenu").style.display = "none";
+                document.getElementById("actionButtons").style.display = "none";
+                document.getElementById("warMenu").style.display = "none";
+                return;
+            }
+            if (isWarPhaseLocked) {
+                document.getElementById("controlsMenu").style.display = "none";
+                document.getElementById("actionButtons").style.display = "none";
+                document.getElementById("warMenu").style.display = "flex";
+            } else {
+                document.getElementById("controlsMenu").style.display = "flex";
+                document.getElementById("actionButtons").style.display = "none";
+                document.getElementById("warMenu").style.display = "none";
+            }
+        }
+
+        function showEndgameNavigation() {
+            isSystemReady = false; isWarPhaseLocked = false;
+            stopPlayerTurnTimer(); if (matchClockInterval) clearInterval(matchClockInterval);
+            clearTimeout(sneakAttackTimeout);
+            document.getElementById("controlsMenu").style.display = "none";
+            document.getElementById("actionButtons").style.display = "none";
+            document.getElementById("warMenu").style.display = "none";
+            document.getElementById("detectBtn").style.display = "none";
+            document.getElementById("endgameMenu").style.display = "flex";
+        }
+
+        function getBalancedTechRoll(isBot) {
+            let rollModifier = Math.random() * 100;
+            if (isBot) rollModifier -= botPityReduction; 
+            else rollModifier += playerPityIncentive;
+
+            let computedRoll = 1;
+            if (rollModifier > 95) computedRoll = 6;
+            else if (rollModifier > 85) computedRoll = 5;
+            else if (rollModifier > 45) computedRoll = 4;
+            else if (rollModifier > 25) computedRoll = 3;
+            else if (rollModifier > 10) computedRoll = 2;
+            else computedRoll = 1;
+
+            if (isBot) {
+                if (computedRoll >= 5) botPityReduction = 35; 
+                else botPityReduction = Math.max(0, botPityReduction - 10);
+            } else {
+                if (computedRoll <= 2) playerPityIncentive += 20; 
+                else playerPityIncentive = 0;
+            }
+            return computedRoll;
+        }
+
+        function triggerAction(type, isAutomated = false) {
+            if (p1Roster <= 0 || p2Roster <= 0) return;
+            if (!isAutomated && ((currentTurn === 2 && matchMode === 'bot') || !isSystemReady)) return; 
+            stopPlayerTurnTimer();
+
+            const dieDisplay = document.getElementById("diceDisplay");
+            dieDisplay.classList.add("dice-spinning"); dieDisplay.innerText = "...";
+
+            let roll = getBalancedTechRoll(currentTurn === 2 && matchMode === 'bot');
+            setTimeout(() => {
+                dieDisplay.classList.remove("dice-spinning"); dieDisplay.innerText = roll;
+                processCombatCalculations(type, roll);
+            }, 400); 
+        }
+
+        function processCombatCalculations(type, roll) {
+            let activeName = currentTurn === 1 ? "P1" : "P2";
+            let activeWeapon = currentTurn === 1 ? p1EquippedWeapon : p2EquippedWeapon;
+            let currentLogMsg = `Rolled a [${roll}]! `;
+
+            if (type === 'war_attack') {
+                if (roll === 6) {
+                    if (currentTurn === 1) {
+                        p1Sixes++; if (p1Sixes >= 2) { handleInstantEnd("P1"); return; }
+                    } else {
+                        p2Sixes++; if (p2Sixes >= 2) { handleInstantEnd("P2"); return; }
+                    }
+                }
+
+                let damageValue = (roll * 2) * 10;
+                if (activeWeapon === "Laser Blaster") damageValue += 15; 
+                else if (activeWeapon === "Plasma Cannon" && roll === 6) damageValue += 30; 
+
+                if (currentTurn === 1) {
+                    if (activeShields.p2) {
+                        activeShields.p2 = false; damageValue = 0;
+                        currentLogMsg += `🛡️ Shield Absorbed it!`;
+                    } else {
+                        p2Hp -= damageValue; currentLogMsg += `⚔️ Struck Enemy for ${damageValue} dmg!`;
+                        if (activeWeapon === "EMP Rifle" && Math.random() < 0.35) { botEmpSkipped = true; }
+                        while(p2Hp <= 0 && p2Roster > 0) { p2Roster--; p2Hp += 150; }
+                    }
+                } else {
+                    if (activeShields.p1) {
+                        activeShields.p1 = false; damageValue = 0;
+                        currentLogMsg += `🛡️ Shield Deflected it!`;
+                    } else {
+                        p1Hp -= damageValue; currentLogMsg += `⚔️ AI struck Player for ${damageValue} dmg!`;
+                        while(p1Hp <= 0 && p1Roster > 0) { p1Roster--; p1Hp += 150; }
+                    }
+                }
+            } 
+            else if (type === 'war_retreat') {
+                isWarPhaseLocked = false; currentLogMsg = `🛡️ ${activeName} RETREATED!`;
+            }
+            else if (type === 'sneak') {
+                if (roll >= 4) {
+                    let stealthBonusDmg = roll * 4;
+                    if (currentTurn === 1) {
+                        if (activeShields.p2) { activeShields.p2 = false; } 
+                        else { p2Hp -= stealthBonusDmg; while(p2Hp <= 0 && p2Roster > 0) { p2Roster--; p2Hp += 150; } }
+                    } else {
+                        if (activeShields.p1) { activeShields.p1 = false; } 
+                        else { p1Hp -= stealthBonusDmg; while(p1Hp <= 0 && p1Roster > 0) { p1Roster--; p1Hp += 150; } }
+                    }
+                    currentLogMsg += `🎯 Sneak hit!`;
+                } else { currentLogMsg += `⚠️ Infiltration detected.`; }
+            }
+
+            if (p1Roster <= 0 || p2Roster <= 0) { setTemporaryLog(currentLogMsg, 2000, () => { evaluateMatchEnd(); }); return; }
+            updateDisplayHuds(); saveGameData();
+
+            if (matchMode === 'pvp') {
+                currentTurn = currentTurn === 1 ? 2 : 1;
+                setTemporaryLog(currentLogMsg, 2500, () => { resetControlButtons(); startPlayerTurnTimer(); });
+            } else {
+                if (currentTurn === 1) {
+                    if (botEmpSkipped) {
+                        botEmpSkipped = false;
+                        setTemporaryLog(currentLogMsg + " ⚡ Bot offline!", 3000, () => { currentTurn = 1; resetControlButtons(); startPlayerTurnTimer(); });
+                    } else {
+                        currentTurn = 2; isSystemReady = false; resetControlButtons();
+                        setTemporaryLog(currentLogMsg + " 🤖 AI turn...", 2000, () => { executeBotAI(); });
+                    }
+                } else { setTemporaryLog(currentLogMsg, 2500, () => { finishBotTurn(); }); }
+            }
+        }
+
+        function executeBotAI() {
+            if (p1Roster <= 0 || p2Roster <= 0) return;
+            if(p2Hp < 60 && !activeShields.p2 && Math.random() < 0.4) {
+                activeShields.p2 = true; updateDisplayHuds();
+            }
+            let choice = isWarPhaseLocked ? (Math.random() > 0.3 ? 'war_attack' : 'war_retreat') : (Math.random() > 0.5 ? 'war' : 'sneak');
+            if (choice === 'war') {
+                isWarPhaseLocked = true; setTimeout(() => { triggerAction('war_attack', true); }, 1200);
+            } else if (choice === 'sneak') {
+                document.getElementById("controlsMenu").style.display = "none";
+                document.getElementById("detectBtn").style.display = "block";
+                sneakAttackTimeout = setTimeout(() => {
+                    document.getElementById("detectBtn").style.display = "none";
+                    if(activeShields.p1) { activeShields.p1 = false; finishBotTurn(); } 
+                    else { p1Hp -= 40; while(p1Hp <= 0 && p1Roster > 0) { p1Roster--; p1Hp += 150; } finishBotTurn(); }
+                }, 5000);
+            } else { triggerAction(choice, true); }
+        }
+
+        function handleDetectSuccess() {
+            clearTimeout(sneakAttackTimeout);
+            document.getElementById("detectBtn").style.display = "none";
+            setTemporaryLog("🛡️ FIREWALL SECURED!", 2000, () => { finishBotTurn(); });
+        }
+
+        function finishBotTurn() {
+            if (p1Roster <= 0 || p2Roster <= 0) { evaluateMatchEnd(); return; }
+            currentTurn = 1; isSystemReady = true; resetControlButtons();
+            updateDisplayHuds(); startPlayerTurnTimer(); 
+        }
+
+        function handleInstantEnd(winner) {
+            stopPlayerTurnTimer(); if (matchClockInterval) clearInterval(matchClockInterval);
+            clearTimeout(sneakAttackTimeout);
+            let winLog = "";
+            if (winner === "P1") { 
+                playerWallet += 500;
+                winLog = `🚀 SYSTEM OVERRIDE OVERLOAD! MATCH ALLOCATION GRANTED: +$500`;
+            } else { 
+                winLog = `💥 CORE REACTION BREACH! System Terminated.`; 
+            }
+            updateDisplayHuds(); saveGameData();
+            setTemporaryLog(winLog, 3000, () => { showEndgameNavigation(); });
+        }
+
+        function evaluateMatchEnd() {
+            stopPlayerTurnTimer(); if (matchClockInterval) clearInterval(matchClockInterval);
+            clearTimeout(sneakAttackTimeout);
+            let matchLog = "";
+            if (p2Roster <= 0) {
+                playerWallet += 500;
+                matchLog = `🏆 CORE SECURED! Match allocation dispatched: +$500`;
+            } else {
+                matchLog = "💀 SYSTEM DEFUNCT! Infrastructure offline.";
+            }
+            updateDisplayHuds(); saveGameData();
+            setTemporaryLog(matchLog, 3000, () => { showEndgameNavigation(); });
+        }
+    </script>
+</body>
+</html>
